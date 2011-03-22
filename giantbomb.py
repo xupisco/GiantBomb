@@ -28,7 +28,9 @@ class GiantBombError(Exception):
 class Api:
     def __init__(self, api_key):
         self.api_key = api_key
+        self.offset = 0
         self.base_url = 'http://api.giantbomb.com/'
+
         
     def checkResponse(self, resp):
         if resp['status_code'] == 1:
@@ -36,22 +38,28 @@ class Api:
         else:
             raise GiantBombError('Error code %s: %s' % (resp['status_code'], resp['error']))
             
-    def searchGames(self, query):
-        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name&format=json" % (self.api_key, query)))
+    def search(self, query):
+        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name&offset=%s&format=json" % (self.api_key, query, self.offset)))
         return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(results)]
         
     def getGame(self, id):
         if type(id).__name__ != 'int':
             id = id.id
-        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&?field_list=id,name,deck,image,images,genres,original_release_date,platforms&format=json" % (id, self.api_key)))
+        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,platforms,videos&format=json" % (id, self.api_key)))
         return Game.NewFromJsonDict(self.checkResponse(game))
+        
+    def getVideo(self, id):
+        if type(id).__name__ != 'int':
+            id = id.id
+        video = simplejson.load(urllib2.urlopen(self.base_url + "/video/%s/?api_key=%s&format=json" % (id, self.api_key)))
+        return Video.NewFromJsonDict(self.checkResponse(video))
 
     def getPlatform(self, id):
         platform = simplejson.load(urllib2.urlopen(self.base_url + "/platform/%s/?api_key=%s&&field_list=id,name,abbreviation,deck&format=json" % (id, self.api_key)))
         return Plataform.NewFromJsonDict(self.checkResponse(platform))
         
     def getPlatforms(self):
-        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&format=json" % self.api_key))
+        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&offset=%s&format=json" % (self.api_key, self.offset)))
         return self.checkResponse(platforms)
         
         
@@ -65,6 +73,7 @@ class Game(object):
                  images = None,
                  genres = None,
                  original_release_date = None,
+                 videos = None,
                  api_detail_url = None):
 
         self.id = id
@@ -75,6 +84,7 @@ class Game(object):
         self.images = images
         self.genres = genres
         self.original_release_date = original_release_date
+        self.videos = videos
         self.api_detail_url = api_detail_url
     
     @staticmethod
@@ -87,7 +97,11 @@ class Game(object):
                     images = [Image.NewFromJsonDict(x) for x in data.get('images', None)],
                     genres = [Genre.NewFromJsonDict(x) for x in data.get('genres', None)],
                     original_release_date = data.get('original_release_date', None),
+                    videos = [Videos.NewFromJsonDict(x) for x in data.get('videos', None)],
                     api_detail_url = data.get('api_detail_url', None))
+                    
+    def __repr__(self):
+        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
                     
                     
 class Platform(object):
@@ -157,7 +171,71 @@ class Genre(object):
         return Genre(id = data.get('id'),
                      name = data.get('name', None),
                      api_detail_url = data.get('api_detail_url', None))
-                      
+                     
+    def __repr__(self):
+        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+                     
+                     
+class Videos(object):
+    def __init__(self,
+                 id = None,
+                 name = None,
+                 deck = None,
+                 image = None,
+                 url = None,
+                 publish_date = None):
+
+        self.id = id
+        self.name = name
+        self.deck = deck
+        self.image = image
+        self.url = url
+        self.publish_date = publish_date
+
+    @staticmethod
+    def NewFromJsonDict(data):
+        return Videos(id = data.get('id'),
+                     name = data.get('name', None),
+                     deck = data.get('deck', None),
+                     image = Image.NewFromJsonDict(data.get('image', None)),
+                     url = data.get('url', None),
+                     publish_date = data.get('publish_date', None),)
+                     
+    def __repr__(self):
+        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+
+
+class Video(object):
+    def __init__(self,
+                 id = None,
+                 name = None,
+                 deck = None,
+                 image = None,
+                 url = None,
+                 publish_date = None,
+                 site_detail_url = None):
+
+        self.id = id
+        self.name = name
+        self.deck = deck
+        self.image = image
+        self.url = url
+        self.publish_date = publish_date
+        self.site_detail_url = site_detail_url
+
+    @staticmethod
+    def NewFromJsonDict(data):
+        return Video(id = data.get('id'),
+                     name = data.get('name', None),
+                     deck = data.get('deck', None),
+                     image = Image.NewFromJsonDict(data.get('image', None)),
+                     url = data.get('url', None),
+                     publish_date = data.get('publish_date', None),
+                     site_detail_url = data.get('site_detail_url', None))
+
+    def __repr__(self):
+        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+
                       
 class SearchResult(object):
     def __init__(self,
@@ -174,3 +252,6 @@ class SearchResult(object):
         return SearchResult(id = data.get('id'),
                             name = data.get('name', None),
                             api_detail_url = data.get('api_detail_url', None))
+                            
+    def __repr__(self):
+        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
