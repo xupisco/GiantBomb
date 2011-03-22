@@ -4,7 +4,7 @@ from urlparse import urlparse
 from urllib2 import HTTPError
 
 __author__ = "Leandro Voltolino <xupisco@gmail.com>"
-__version__ = "0.3"
+__version__ = "0.6"
 
 try:
     import simplejson
@@ -30,7 +30,10 @@ class Api:
         self.api_key = api_key
         self.offset = 0
         self.base_url = 'http://api.giantbomb.com/'
-
+        
+    @staticmethod
+    def defaultRepr(obj):
+        return unicode("<%s: %s>" % (obj.id, obj.name)).encode('utf-8')
         
     def checkResponse(self, resp):
         if resp['status_code'] == 1:
@@ -101,7 +104,7 @@ class Game(object):
                     api_detail_url = data.get('api_detail_url', None))
                     
     def __repr__(self):
-        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+        return Api.defaultRepr(self)
                     
                     
 class Platform(object):
@@ -125,6 +128,9 @@ class Platform(object):
                     abbreviation = data.get('abbreviation', None),
                     deck = data.get('deck', None),
                     api_detail_url = data.get('api_detail_url', None))
+                    
+    def __repr__(self):
+        return Api.defaultRepr(self)
                     
                     
 class Image(object):
@@ -173,7 +179,7 @@ class Genre(object):
                      api_detail_url = data.get('api_detail_url', None))
                      
     def __repr__(self):
-        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+        return Api.defaultRepr(self)
                      
                      
 class Videos(object):
@@ -202,7 +208,7 @@ class Videos(object):
                      publish_date = data.get('publish_date', None),)
                      
     def __repr__(self):
-        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+        return Api.defaultRepr(self)
 
 
 class Video(object):
@@ -234,7 +240,7 @@ class Video(object):
                      site_detail_url = data.get('site_detail_url', None))
 
     def __repr__(self):
-        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+        return Api.defaultRepr(self)
 
                       
 class SearchResult(object):
@@ -254,4 +260,4 @@ class SearchResult(object):
                             api_detail_url = data.get('api_detail_url', None))
                             
     def __repr__(self):
-        return unicode("<%s: %s>" % (self.id, self.name)).encode('utf-8')
+        return Api.defaultRepr(self)
