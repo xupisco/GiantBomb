@@ -15,7 +15,7 @@ except ImportError:
         try:
             from django.utils import simplejson
         except:
-            raise Exception("giantbomb wrapper requires the simplejson library (or Python 2.6) to work. http://www.undefined.org/python/")
+            raise Exception("GiantBomb wrapper requires the simplejson library (or Python 2.6) to work. http://www.undefined.org/python/")
             
 
 class GiantBombError(Exception):
@@ -42,7 +42,7 @@ class Api:
             raise GiantBombError('Error code %s: %s' % (resp['status_code'], resp['error']))
             
     def search(self, query):
-        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name&offset=%s&format=json" % (self.api_key, query, self.offset)))
+        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name&offset=%s&format=json" % (self.api_key, urllib2.quote(query), self.offset)))
         return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(results)]
         
     def getGame(self, id):
