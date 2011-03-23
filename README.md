@@ -26,14 +26,17 @@ Basic usage:
     games = gb.getGames(94, 12300) // 94 = PC
     print games
     
-    >>> [<29220: Zero Gear>, <29234: Pro Cycling Manager: Season 2010>, <29238: Allods Online>, <29240: Hammerfight>, <29247: Sacraboar>, <29249: POWDER>, <29257: Grand Fantasia>, <29258: Massive Assault Network 2>, ...]
+    >>> [<29220: Zero Gear>, <29234: Pro Cycling Manager: Season 2010>,
+         <29238: Allods Online>, <29240: Hammerfight>, <29247: Sacraboar>,
+         <29249: POWDER>, <29257: Grand Fantasia>, ...]
     
-    ------------------------------------------------------------------------
+    ------------------------------------------------------------------------------
     
     results = gb.search('call of duty')
     print results
     
-    >>> [<26423: Call of Duty: Black Ops>, <2133: Call of Duty 4: Modern Warfare>, <20777: Call of Duty: World at War>, ...]
+    >>> [<26423: Call of Duty: Black Ops>, <2133: Call of Duty 4: Modern Warfare>,
+         <20777: Call of Duty: World at War>, ...]
     
     game = gb.getGame(26423) // or gb.getGame(results[0])
     for p in game.platforms:
