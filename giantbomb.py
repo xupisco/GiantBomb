@@ -28,7 +28,6 @@ class GiantBombError(Exception):
 class Api:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.offset = 0
         self.base_url = 'http://api.giantbomb.com/'
         
     @staticmethod
@@ -41,8 +40,8 @@ class Api:
         else:
             raise GiantBombError('Error code %s: %s' % (resp['status_code'], resp['error']))
             
-    def search(self, query):
-        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name&offset=%s&format=json" % (self.api_key, urllib2.quote(query), self.offset)))
+    def search(self, query, offset = 0):
+        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name&offset=%s&format=json" % (self.api_key, urllib2.quote(query), offset)))
         return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(results)]
         
     def getGame(self, id):
@@ -50,6 +49,12 @@ class Api:
             id = id.id
         game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,platforms,videos&format=json" % (id, self.api_key)))
         return Game.NewFromJsonDict(self.checkResponse(game))
+        
+    def getGames(self, plat, offset = 0):
+        if type(plat).__name__ != 'int':
+            plat = plat.id
+        games = simplejson.load(urllib2.urlopen(self.base_url + "/games/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date&platforms=%s&offset=%s&format=json" % (self.api_key, plat, offset)))
+        return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(games)]
         
     def getVideo(self, id):
         if type(id).__name__ != 'int':
@@ -61,8 +66,8 @@ class Api:
         platform = simplejson.load(urllib2.urlopen(self.base_url + "/platform/%s/?api_key=%s&&field_list=id,name,abbreviation,deck&format=json" % (id, self.api_key)))
         return Plataform.NewFromJsonDict(self.checkResponse(platform))
         
-    def getPlatforms(self):
-        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&offset=%s&format=json" % (self.api_key, self.offset)))
+    def getPlatforms(self, offset = 0):
+        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&offset=%s&format=json" % (self.api_key, offset)))
         return self.checkResponse(platforms)
         
         
