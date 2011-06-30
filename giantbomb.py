@@ -47,13 +47,13 @@ class Api:
     def getGame(self, id):
         if type(id).__name__ != 'int':
             id = id.id
-        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,platforms,videos&format=json" % (id, self.api_key)))
+        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,platforms,videos,api_detail_url,site_detail_url&format=json" % (id, self.api_key)))
         return Game.NewFromJsonDict(self.checkResponse(game))
         
     def getGames(self, plat, offset = 0):
         if type(plat).__name__ != 'int':
             plat = plat.id
-        games = simplejson.load(urllib2.urlopen(self.base_url + "/games/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date&platforms=%s&offset=%s&format=json" % (self.api_key, plat, offset)))
+        games = simplejson.load(urllib2.urlopen(self.base_url + "/games/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,api_detail_url,site_detail_url&platforms=%s&offset=%s&format=json" % (self.api_key, plat, offset)))
         return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(games)]
         
     def getVideo(self, id):
@@ -82,7 +82,8 @@ class Game(object):
                  genres = None,
                  original_release_date = None,
                  videos = None,
-                 api_detail_url = None):
+                 api_detail_url = None,
+                 site_detail_url = None):
 
         self.id = id
         self.name = name
@@ -94,19 +95,23 @@ class Game(object):
         self.original_release_date = original_release_date
         self.videos = videos
         self.api_detail_url = api_detail_url
+        self.site_detail_url = site_detail_url
     
     @staticmethod
     def NewFromJsonDict(data):
-        return Game(id = data.get('id'),
-                    name = data.get('name', None),
-                    deck = data.get('deck', None),
-                    platforms = [Platform.NewFromJsonDict(x) for x in data.get('platforms', None)],
-                    image = Image.NewFromJsonDict(data.get('image', None)),
-                    images = [Image.NewFromJsonDict(x) for x in data.get('images', None)],
-                    genres = [Genre.NewFromJsonDict(x) for x in data.get('genres', None)],
-                    original_release_date = data.get('original_release_date', None),
-                    videos = [Videos.NewFromJsonDict(x) for x in data.get('videos', None)],
-                    api_detail_url = data.get('api_detail_url', None))
+        if data:
+            return Game(id = data.get('id'),
+                        name = data.get('name', None),
+                        deck = data.get('deck', None),
+                        platforms = [Platform.NewFromJsonDict(x) for x in data.get('platforms', None)],
+                        image = Image.NewFromJsonDict(data.get('image', None)),
+                        images = [Image.NewFromJsonDict(x) for x in data.get('images', None)],
+                        genres = [Genre.NewFromJsonDict(x) for x in data.get('genres', None)],
+                        original_release_date = data.get('original_release_date', None),
+                        videos = [Videos.NewFromJsonDict(x) for x in data.get('videos', None)],
+                        api_detail_url = data.get('api_detail_url', None),
+                        site_detail_url = data.get('site_detail_url', None))
+        return None
                     
     def __repr__(self):
         return Api.defaultRepr(self)
@@ -128,11 +133,13 @@ class Platform(object):
 
     @staticmethod
     def NewFromJsonDict(data):
-        return Platform(id = data.get('id'),
-                    name = data.get('name', None),
-                    abbreviation = data.get('abbreviation', None),
-                    deck = data.get('deck', None),
-                    api_detail_url = data.get('api_detail_url', None))
+        if data:
+            return Platform(id = data.get('id'),
+                        name = data.get('name', None),
+                        abbreviation = data.get('abbreviation', None),
+                        deck = data.get('deck', None),
+                        api_detail_url = data.get('api_detail_url', None))
+        return None
                     
     def __repr__(self):
         return Api.defaultRepr(self)
@@ -158,13 +165,15 @@ class Image(object):
 
     @staticmethod
     def NewFromJsonDict(data):
-        return Image(icon = data['icon_url'],
-                     medium = data.get('medium_url', None),
-                     tiny = data.get('tiny_url', None),
-                     small = data.get('small_url', None),
-                     thumb = data.get('thumb_url', None),
-                     screen = data.get('screen_url', None),
-                     super = data.get('super_url', None),)
+        if data:
+            return Image(icon = data.get('icon_url', None),
+                         medium = data.get('medium_url', None),
+                         tiny = data.get('tiny_url', None),
+                         small = data.get('small_url', None),
+                         thumb = data.get('thumb_url', None),
+                         screen = data.get('screen_url', None),
+                         super = data.get('super_url', None),)
+        return None
                      
                      
 class Genre(object):
@@ -179,9 +188,11 @@ class Genre(object):
 
     @staticmethod
     def NewFromJsonDict(data):
-        return Genre(id = data.get('id'),
-                     name = data.get('name', None),
-                     api_detail_url = data.get('api_detail_url', None))
+        if data:
+            return Genre(id = data.get('id'),
+                         name = data.get('name', None),
+                         api_detail_url = data.get('api_detail_url', None))
+        return None
                      
     def __repr__(self):
         return Api.defaultRepr(self)
@@ -205,12 +216,14 @@ class Videos(object):
 
     @staticmethod
     def NewFromJsonDict(data):
-        return Videos(id = data.get('id'),
-                     name = data.get('name', None),
-                     deck = data.get('deck', None),
-                     image = Image.NewFromJsonDict(data.get('image', None)),
-                     url = data.get('url', None),
-                     publish_date = data.get('publish_date', None),)
+        if data:
+            return Videos(id = data.get('id'),
+                         name = data.get('name', None),
+                         deck = data.get('deck', None),
+                         image = Image.NewFromJsonDict(data.get('image', None)),
+                         url = data.get('url', None),
+                         publish_date = data.get('publish_date', None),)
+        return None
                      
     def __repr__(self):
         return Api.defaultRepr(self)
@@ -236,13 +249,15 @@ class Video(object):
 
     @staticmethod
     def NewFromJsonDict(data):
-        return Video(id = data.get('id'),
-                     name = data.get('name', None),
-                     deck = data.get('deck', None),
-                     image = Image.NewFromJsonDict(data.get('image', None)),
-                     url = data.get('url', None),
-                     publish_date = data.get('publish_date', None),
-                     site_detail_url = data.get('site_detail_url', None))
+        if data:
+            return Video(id = data.get('id'),
+                         name = data.get('name', None),
+                         deck = data.get('deck', None),
+                         image = Image.NewFromJsonDict(data.get('image', None)),
+                         url = data.get('url', None),
+                         publish_date = data.get('publish_date', None),
+                         site_detail_url = data.get('site_detail_url', None))
+        return None
 
     def __repr__(self):
         return Api.defaultRepr(self)
@@ -260,9 +275,11 @@ class SearchResult(object):
 
     @staticmethod
     def NewFromJsonDict(data):
-        return SearchResult(id = data.get('id'),
-                            name = data.get('name', None),
-                            api_detail_url = data.get('api_detail_url', None))
+        if data:
+            return SearchResult(id = data.get('id'),
+                                name = data.get('name', None),
+                                api_detail_url = data.get('api_detail_url', None))
+        return None
                             
     def __repr__(self):
         return Api.defaultRepr(self)
