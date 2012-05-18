@@ -16,7 +16,7 @@ setup(
     author = giantbomb.__author__,
     author_email = "xupisco@gmail.com",
     description = ("A Python wrapper for the Giantbomb API."),
-    license = "BSD",
+    license = "MIT",
     keywords = "giantbomb api wrapper",
     url = "https://github.com/xupisco/GiantBomb",
     packages=['GiantBomb'],
@@ -26,6 +26,6 @@ setup(
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: MIT License",
     ],
 )
