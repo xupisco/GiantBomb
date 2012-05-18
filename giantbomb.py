@@ -71,7 +71,7 @@ class Api:
         return self.checkResponse(platforms)
         
         
-class Game(object):
+class Game:
     def __init__(self,
                  id = None,
                  name = None,
@@ -117,7 +117,7 @@ class Game(object):
         return Api.defaultRepr(self)
                     
                     
-class Platform(object):
+class Platform:
     def __init__(self,
                  id = None,
                  name = None,
@@ -145,7 +145,7 @@ class Platform(object):
         return Api.defaultRepr(self)
                     
                     
-class Image(object):
+class Image:
     def __init__(self,
                  icon = None,
                  medium = None,
@@ -176,7 +176,7 @@ class Image(object):
         return None
                      
                      
-class Genre(object):
+class Genre:
     def __init__(self,
                  id = None,
                  name = None,
@@ -198,7 +198,7 @@ class Genre(object):
         return Api.defaultRepr(self)
                      
                      
-class Videos(object):
+class Videos:
     def __init__(self,
                  id = None,
                  name = None,
@@ -229,7 +229,7 @@ class Videos(object):
         return Api.defaultRepr(self)
 
 
-class Video(object):
+class Video:
     def __init__(self,
                  id = None,
                  name = None,
@@ -263,7 +263,7 @@ class Video(object):
         return Api.defaultRepr(self)
 
                       
-class SearchResult(object):
+class SearchResult:
     def __init__(self,
                  id = None,
                  name = None,
