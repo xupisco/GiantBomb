@@ -4,7 +4,7 @@ from urlparse import urlparse
 from urllib2 import HTTPError
 
 __author__ = "Leandro Voltolino <xupisco@gmail.com>"
-__version__ = "0.6"
+__version__ = "0.7"
 
 try:
     import simplejson
