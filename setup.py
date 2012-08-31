@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
+import os, sys
 from setuptools import setup
-from GiantBomb import giantbomb
+from giantbomb import giantbomb
 
 def read(fname):
         return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -11,7 +12,7 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 setup(
-    name = "an_example_pypi_project",
+    name = "giantbomb",
     version = giantbomb.__version__,
     author = giantbomb.__author__,
     author_email = "xupisco@gmail.com",
