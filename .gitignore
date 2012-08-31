@@ -5,3 +5,4 @@ _matrix/
 *.db
 .project
 .pydevproject
+giantbomb.egg-info/
