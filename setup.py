@@ -20,7 +20,7 @@ setup(
     license = "MIT",
     keywords = "giantbomb api wrapper",
     url = "https://github.com/xupisco/GiantBomb",
-    packages=['GiantBomb'],
+    packages=['giantbomb'],
     long_description=read('README.md'),
     classifiers=[
         "Environment :: Console",
