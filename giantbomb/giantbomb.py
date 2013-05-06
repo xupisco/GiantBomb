@@ -102,12 +102,12 @@ class Game:
             return Game(id=data.get('id'),
                         name=data.get('name', None),
                         deck=data.get('deck', None),
-                        platforms=[Platform.NewFromJsonDict(x) for x in data.get('platforms', None)],
-                        image=Image.NewFromJsonDict(data.get('image', None)),
-                        images=[Image.NewFromJsonDict(x) for x in data.get('images', None)],
-                        genres=[Genre.NewFromJsonDict(x) for x in data.get('genres', None)],
+                        platforms=[Platform.NewFromJsonDict(x) for x in data.get('platforms', [])],
+                        image=Image.NewFromJsonDict(data.get('image', [])),
+                        images=[Image.NewFromJsonDict(x) for x in data.get('images', [])],
+                        genres=[Genre.NewFromJsonDict(x) for x in data.get('genres', [])],
                         original_release_date=data.get('original_release_date', None),
-                        videos=[Videos.NewFromJsonDict(x) for x in data.get('videos', None)],
+                        videos=[Videos.NewFromJsonDict(x) for x in data.get('videos', [])],
                         api_detail_url=data.get('api_detail_url', None),
                         site_detail_url=data.get('site_detail_url', None))
         return None
@@ -279,7 +279,6 @@ class SearchResult:
 
     @staticmethod
     def NewFromJsonDict(data):
-        print data
         if data:
             return SearchResult(id=data.get('id'),
                                 name=data.get('name', None),
