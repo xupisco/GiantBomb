@@ -1,4 +1,5 @@
 import urllib2
+from collections import Iterable
 
 
 __author__ = "Leandro Voltolino <xupisco@gmail.com>"
@@ -46,7 +47,7 @@ class Api:
     def getGame(self, id):
         if type(id).__name__ != 'int':
             id = id.id
-        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,platforms,videos,api_detail_url,site_detail_url&format=json" % (id, self.api_key)))
+        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,publishers,developers,franchises,image,images,genres,original_release_date,platforms,videos,api_detail_url,site_detail_url,date_added,date_last_updated&format=json" % (id, self.api_key)))
         return Game.NewFromJsonDict(self.checkResponse(game))
 
     def getGames(self, plat, offset=0):
@@ -62,11 +63,19 @@ class Api:
         return Video.NewFromJsonDict(self.checkResponse(video))
 
     def getPlatform(self, id):
-        platform = simplejson.load(urllib2.urlopen(self.base_url + "/platform/%s/?api_key=%s&&field_list=id,name,abbreviation,deck,image&format=json" % (id, self.api_key)))
+        platform = simplejson.load(urllib2.urlopen(self.base_url + "/platform/%s/?api_key=%s&&field_list=id,name,abbreviation,deck,api_detail_url,image&format=json" % (id, self.api_key)))
         return Platform.NewFromJsonDict(self.checkResponse(platform))
 
     def getPlatforms(self, offset=0):
         platforms = simplejson.load(urllib2.urlopen(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&offset=%s&format=json" % (self.api_key, offset)))
+        return self.checkResponse(platforms)
+        
+    def getFranchise(self, id):
+        franchise = simplejson.load(urllib2.urlopen(self.base_url + "/franchise/%s/?api_key=%s&&field_list=id,name,deck,api_detail_url,image&format=json" % (id, self.api_key)))
+        return Franchise.NewFromJsonDict(self.checkResponse(franchise))
+        
+    def getFranchises(self, offset=0):
+        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/franchises/?api_key=%s&field_list=id,name,deck&offset=%s&format=json" % (self.api_key, offset)))
         return self.checkResponse(platforms)
 
 
@@ -76,18 +85,26 @@ class Game:
                  name=None,
                  deck=None,
                  platforms=None,
+                 developers=None,
+                 publishers=None,
+                 franchises=None,
                  image=None,
                  images=None,
                  genres=None,
                  original_release_date=None,
                  videos=None,
                  api_detail_url=None,
-                 site_detail_url=None):
+                 site_detail_url=None,
+                 date_added_gb=None,
+                 date_last_updated_gb=None):
 
         self.id = id
         self.name = name
         self.deck = deck
         self.platforms = platforms
+        self.developers = developers         
+        self.publishers = publishers
+        self.franchises = franchises       
         self.image = image
         self.images = images
         self.genres = genres
@@ -95,21 +112,38 @@ class Game:
         self.videos = videos
         self.api_detail_url = api_detail_url
         self.site_detail_url = site_detail_url
+        self.date_added_gb = date_added_gb
+        self.date_last_updated_gb = date_last_updated_gb
 
     @staticmethod
     def NewFromJsonDict(data):
         if data:
+            franchises_check = data.get('franchises', [])
+            platforms_check = data.get('platforms', [])
+            images_check = data.get('images', [])
+            genres_check = data.get('genres', [])
+            videos_check = data.get('videos_check', [])
+            list_check = {'franchise': franchises_check, 'platform' : platforms_check, 'image':images_check, 'genre' : genres_check, 'video' : videos_check}
+            for item in list_check:
+                if not isinstance(list_check[item], Iterable):
+                    list_check[item] = None
+                           
             return Game(id=data.get('id'),
-                        name=data.get('name', None),
-                        deck=data.get('deck', None),
-                        platforms=[Platform.NewFromJsonDict(x) for x in data.get('platforms', [])],
-                        image=Image.NewFromJsonDict(data.get('image', [])),
-                        images=[Image.NewFromJsonDict(x) for x in data.get('images', [])],
-                        genres=[Genre.NewFromJsonDict(x) for x in data.get('genres', [])],
-                        original_release_date=data.get('original_release_date', None),
-                        videos=[Videos.NewFromJsonDict(x) for x in data.get('videos', [])],
-                        api_detail_url=data.get('api_detail_url', None),
-                        site_detail_url=data.get('site_detail_url', None))
+                        name = data.get('name', None),
+                        deck = data.get('deck', None),
+                        platforms = list_check['platform'], 
+                        developers = data.get('developers', None), 
+                        publishers = data.get('publishers', None), 
+                        franchises = list_check['franchise'], 
+                        image = Image.NewFromJsonDict(data.get('image', [])),
+                        images = list_check['image'],
+                        genres = list_check['genre'],
+                        original_release_date = data.get('original_release_date', None),
+                        videos = list_check['video'],
+                        api_detail_url = data.get('api_detail_url', None),
+                        site_detail_url = data.get('site_detail_url', None),
+                        date_added_gb = data.get('date_added', None),  
+                        date_last_updated_gb = data.get('date_last_updated', None))        
         return None
 
     def __repr__(self):
@@ -145,6 +179,34 @@ class Platform:
 
     def __repr__(self):
         return Api.defaultRepr(self)
+        
+class Franchise:
+    def __init__(self,
+                 id=None,
+                 name=None,         
+                 deck=None,
+                 api_detail_url=None,
+                 image=None):
+
+        self.id = id
+        self.name = name
+        self.deck = deck
+        self.api_detail_url = api_detail_url
+        self.image = image
+
+    @staticmethod
+    def NewFromJsonDict(data):
+        if data:
+            return Franchise(id=data.get('id'),
+                        name=data.get('name', None),
+                        deck=data.get('deck', None),
+                        api_detail_url=data.get('api_detail_url', None),
+                        image=Image.NewFromJsonDict(data.get('image', None)))
+        return None
+
+    def __repr__(self):
+        return Api.defaultRepr(self)
+    
 
 
 class Image:
@@ -176,7 +238,6 @@ class Image:
                          screen=data.get('screen_url', None),
                          super=data.get('super_url', None),)
         return None
-
 
 class Genre:
     def __init__(self,
