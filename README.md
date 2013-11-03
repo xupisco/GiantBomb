@@ -29,7 +29,7 @@ Basic usage:
  * getFranchise(franchise_id)
  * getFranchises(offset)
  
-*Everything return an object:*  
+*Everything returns an object:*  
 
 **Examples:**  
 
