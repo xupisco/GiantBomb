@@ -26,9 +26,10 @@ class GiantBombError(Exception):
 
 
 class Api:
-    def __init__(self, api_key):
+    def __init__(self, api_key, user_agent):
         self.api_key = api_key
         self.base_url = 'http://api.giantbomb.com/'
+        self.headers = {'User-Agent', user_agent}
 
     @staticmethod
     def defaultRepr(obj):
@@ -41,41 +42,49 @@ class Api:
             raise GiantBombError('Error code %s: %s' % (resp['status_code'], resp['error']))
 
     def search(self, query, offset=0):
-        results = simplejson.load(urllib2.urlopen(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name,image&offset=%s&format=json" % (self.api_key, urllib2.quote(query), offset)))
+        req = urllib2.Request(self.base_url + "/search/?api_key=%s&resources=game&query=%s&field_list=id,name,image&offset=%s&format=json" % (self.api_key, urllib2.quote(query), offset), None, self.headers)
+        results = simplejson.load(urllib2.urlopen(req))
         return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(results)]
 
     def getGame(self, id):
         if type(id).__name__ != 'int':
             id = id.id
-        game = simplejson.load(urllib2.urlopen(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,publishers,developers,franchises,image,images,genres,original_release_date,platforms,videos,api_detail_url,site_detail_url,date_added,date_last_updated&format=json" % (id, self.api_key)))
+        req = urllib2.Request(self.base_url + "/game/%s/?api_key=%s&field_list=id,name,deck,publishers,developers,franchises,image,images,genres,original_release_date,platforms,videos,api_detail_url,site_detail_url,date_added,date_last_updated&format=json" % (id, self.api_key), None, self.headers)
+        game = simplejson.load(urllib2.urlopen(req))
         return Game.NewFromJsonDict(self.checkResponse(game))
 
     def getGames(self, plat, offset=0):
         if type(plat).__name__ != 'int':
             plat = plat.id
-        games = simplejson.load(urllib2.urlopen(self.base_url + "/games/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,api_detail_url,site_detail_url&platforms=%s&offset=%s&format=json" % (self.api_key, plat, offset)))
+        req = urllib2.Request(self.base_url + "/games/?api_key=%s&field_list=id,name,deck,image,images,genres,original_release_date,api_detail_url,site_detail_url&platforms=%s&offset=%s&format=json" % (self.api_key, plat, offset), None, self.headers)
+        games = simplejson.load(urllib2.urlopen(req))
         return [SearchResult.NewFromJsonDict(x) for x in self.checkResponse(games)]
 
     def getVideo(self, id):
         if type(id).__name__ != 'int':
             id = id.id
-        video = simplejson.load(urllib2.urlopen(self.base_url + "/video/%s/?api_key=%s&format=json" % (id, self.api_key)))
+        req = urllib2.Request(self.base_url + "/video/%s/?api_key=%s&format=json" % (id, self.api_key), None, self.headers)
+        video = simplejson.load(urllib2.urlopen(req))
         return Video.NewFromJsonDict(self.checkResponse(video))
 
     def getPlatform(self, id):
-        platform = simplejson.load(urllib2.urlopen(self.base_url + "/platform/%s/?api_key=%s&&field_list=id,name,abbreviation,deck,api_detail_url,image&format=json" % (id, self.api_key)))
+        req = urllib2.Request(self.base_url + "/platform/%s/?api_key=%s&&field_list=id,name,abbreviation,deck,api_detail_url,image&format=json" % (id, self.api_key), None, self.headers)
+        platform = simplejson.load(urllib2.urlopen(req))
         return Platform.NewFromJsonDict(self.checkResponse(platform))
 
     def getPlatforms(self, offset=0):
-        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&offset=%s&format=json" % (self.api_key, offset)))
+        req = urllib2.Request(self.base_url + "/platforms/?api_key=%s&field_list=id,name,abbreviation,deck&offset=%s&format=json" % (self.api_key, offset), None, self.headers)
+        platforms = simplejson.load(urllib2.urlopen(req))
         return self.checkResponse(platforms)
         
     def getFranchise(self, id):
-        franchise = simplejson.load(urllib2.urlopen(self.base_url + "/franchise/%s/?api_key=%s&&field_list=id,name,deck,api_detail_url,image&format=json" % (id, self.api_key)))
+        req = urllib2.Request(self.base_url + "/franchise/%s/?api_key=%s&&field_list=id,name,deck,api_detail_url,image&format=json" % (id, self.api_key), None, self.headers);
+        franchise = simplejson.load(urllib2.urlopen(req))
         return Franchise.NewFromJsonDict(self.checkResponse(franchise))
         
     def getFranchises(self, offset=0):
-        platforms = simplejson.load(urllib2.urlopen(self.base_url + "/franchises/?api_key=%s&field_list=id,name,deck&offset=%s&format=json" % (self.api_key, offset)))
+        req = urllib2.Request(self.base_url + "/franchises/?api_key=%s&field_list=id,name,deck&offset=%s&format=json" % (self.api_key, offset), None, self.headers)
+        platforms = simplejson.load(urllib2.urlopen(req))
         return self.checkResponse(platforms)
 
 
