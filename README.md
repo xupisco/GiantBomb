@@ -34,7 +34,7 @@ Basic usage:
 **Examples:**  
 
     import giantbomb  
-    gb = giantbomb.Api('YOUR_KEY')  
+    gb = giantbomb.Api('YOUR_KEY', 'YOUR_USER_AGENT')
     
     games = gb.getGames(94, 12300) // 94 = PC
     print games
