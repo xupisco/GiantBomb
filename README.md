@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Basic usage:  
 
     import giantbomb  
-    gb = giantbomb.Api('YOUR_KEY')
+    gb = giantbomb.Api('YOUR_KEY', 'YOUR_USER_AGENT')
     
 **Current Methods:**  
 
