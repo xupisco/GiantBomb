@@ -29,7 +29,7 @@ class Api:
     def __init__(self, api_key, user_agent):
         self.api_key = api_key
         self.base_url = 'http://api.giantbomb.com/'
-        self.headers = {'User-Agent', user_agent}
+        self.headers = {'User-Agent' : user_agent}
 
     @staticmethod
     def defaultRepr(obj):
